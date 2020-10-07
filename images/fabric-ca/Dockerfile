@@ -25,7 +25,20 @@ RUN go install -tags "${GO_TAGS}" -ldflags "${GO_LDFLAGS}" \
 
 FROM alpine:${ALPINE_VER}
 RUN apk add --no-cache \
-	tzdata;
+	tzdata \
+	automake \
+	autoconf \
+	libtool \
+	g++ \
+	openssl \
+	opensc \
+	curl \ 
+	libressl-dev \
+	make;
+
+COPY SoftHSMv2 /SoftHSMv2
+RUN cd /SoftHSMv2 && sh autogen.sh && ./configure && make && make install
+
 ENV FABRIC_CA_HOME /etc/hyperledger/fabric-ca-server
 COPY --from=builder /go/bin /usr/local/bin
 EXPOSE 7054
